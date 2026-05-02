@@ -26,10 +26,16 @@
 
 ## 集合内的 Skills
 
-| Skill | Skill |
-|---|---|
-| [**web-video-presentation**](#web-video-presentation)<br>网页视频 / 演示工程 | [**web-design-engineer**](#web-design-engineer)<br>设计 / 前端 |
-| [**gpt-image-2**](#gpt-image-2)<br>图像生成 / Prompt | [**kb-retriever**](#kb-retriever)<br>本地知识库检索 |
+<table width="100%">
+<tr>
+<td width="50%"><a href="#web-video-presentation"><strong>web-video-presentation</strong></a><br/>网页视频 / 演示工程</td>
+<td width="50%"><a href="#web-design-engineer"><strong>web-design-engineer</strong></a><br/>设计 / 前端</td>
+</tr>
+<tr>
+<td width="50%"><a href="#gpt-image-2"><strong>gpt-image-2</strong></a><br/>图像生成 / Prompt</td>
+<td width="50%"><a href="#kb-retriever"><strong>kb-retriever</strong></a><br/>本地知识库检索</td>
+</tr>
+</table>
 
 ### [`web-video-presentation`](./skills/web-video-presentation)
 

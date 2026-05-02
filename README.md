@@ -26,10 +26,16 @@
 
 ## What's inside
 
-| Skill | Skill |
-|---|---|
-| [**web-video-presentation**](#web-video-presentation)<br>Web video / presentation | [**web-design-engineer**](#web-design-engineer)<br>Design / frontend |
-| [**gpt-image-2**](#gpt-image-2)<br>Image generation / prompting | [**kb-retriever**](#kb-retriever)<br>Local knowledge retrieval |
+<table width="100%">
+<tr>
+<td width="50%"><a href="#web-video-presentation"><strong>web-video-presentation</strong></a><br/>Web video / presentation</td>
+<td width="50%"><a href="#web-design-engineer"><strong>web-design-engineer</strong></a><br/>Design / frontend</td>
+</tr>
+<tr>
+<td width="50%"><a href="#gpt-image-2"><strong>gpt-image-2</strong></a><br/>Image generation / prompting</td>
+<td width="50%"><a href="#kb-retriever"><strong>kb-retriever</strong></a><br/>Local knowledge retrieval</td>
+</tr>
+</table>
 
 ### [`web-video-presentation`](./skills/web-video-presentation)
 
