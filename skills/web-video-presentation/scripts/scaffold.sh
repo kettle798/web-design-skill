@@ -7,15 +7,15 @@
 #   bash scripts/scaffold.sh --list-themes
 #
 # 例子：
-#   bash .cursor/skills/web-video-presentation/scripts/scaffold.sh ./presentation
-#   bash .cursor/skills/web-video-presentation/scripts/scaffold.sh ./talk --theme=paper-press
-#   bash .cursor/skills/web-video-presentation/scripts/scaffold.sh --list-themes
+#   bash <path-to-web-video-presentation>/scripts/scaffold.sh ./presentation
+#   bash <path-to-web-video-presentation>/scripts/scaffold.sh ./talk --theme=paper-press
+#   bash <path-to-web-video-presentation>/scripts/scaffold.sh --list-themes
 #
 # 跑完后，看 SKILL.md "Phase 2.4 实现单章" + references/CHAPTER-CRAFT.md
 # 了解每章怎么写。卡壳时翻 references/EXAMPLES/ 找完整章节 anchor。
 #
 # 之后切换主题，覆盖一个文件即可：
-#   cp .cursor/skills/web-video-presentation/themes/<id>/tokens.css \
+#   cp <path-to-web-video-presentation>/themes/<id>/tokens.css \
 #      <project>/src/styles/tokens.css
 # ─────────────────────────────────────────────────────────────
 set -euo pipefail
@@ -26,7 +26,7 @@ THEMES_DIR="$SKILL_DIR/themes"
 DEFAULT_THEME="midnight-press"
 
 list_themes() {
-  echo "可用主题（来自 $THEMES_DIR）:"
+  echo "可用主题（来自 ${THEMES_DIR}）:"
   echo
   for dir in "$THEMES_DIR"/*/; do
     [[ -d "$dir" ]] || continue
@@ -39,7 +39,7 @@ list_themes() {
     desc=$(grep -E '"descriptionZh"' "$meta" | head -n1 | sed -E 's/.*"descriptionZh":[[:space:]]*"([^"]+)".*/\1/')
     printf "  • %-18s %s\n      %s\n\n" "$id" "$name" "$desc"
   done
-  echo "用 --theme=<id> 选定一个。默认：$DEFAULT_THEME。"
+  echo "用 --theme=<id> 选定一个。默认：${DEFAULT_THEME}。"
 }
 
 # ── 解析参数 ──
@@ -69,7 +69,7 @@ THEME_DIR="$THEMES_DIR/$THEME"
 THEME_TOKENS="$THEME_DIR/tokens.css"
 
 if [[ ! -d "$THEME_DIR" || ! -f "$THEME_TOKENS" ]]; then
-  echo "✗ 找不到主题 '$THEME'。可用主题：" >&2
+  echo "✗ 找不到主题 '${THEME}'。可用主题：" >&2
   echo >&2
   for dir in "$THEMES_DIR"/*/; do
     [[ -d "$dir" ]] || continue
@@ -79,7 +79,7 @@ if [[ ! -d "$THEME_DIR" || ! -f "$THEME_TOKENS" ]]; then
 fi
 
 if [[ -d "$TARGET" && -n "$(ls -A "$TARGET" 2>/dev/null || true)" ]]; then
-  echo "✗ 目标目录 '$TARGET' 已存在且非空，已中止。" >&2
+  echo "✗ 目标目录 '${TARGET}' 已存在且非空，已中止。" >&2
   exit 1
 fi
 
@@ -96,6 +96,9 @@ cd "$TARGET"
 echo "▸ 安装依赖（可能要等一会）..."
 npm install >/dev/null 2>&1
 
+echo "▸ 安装 tsx（用于 extract-narrations 脚本）..."
+npm install --save-dev tsx >/dev/null 2>&1
+
 echo "▸ 用演示骨架替换默认 boilerplate"
 
 # 干掉我们不要的 Vite 默认 boilerplate
@@ -111,7 +114,7 @@ rmdir src/assets 2>/dev/null || true
 mkdir -p \
   src/styles src/hooks src/components src/registry \
   src/chapters/01-example \
-  public
+  public scripts
 
 cp "$TEMPLATES/vite.config.ts" .
 cp "$TEMPLATES/index.html" .
@@ -125,19 +128,43 @@ cp "$TEMPLATES/src/styles/base.css"         src/styles/base.css
 cp "$TEMPLATES/src/styles/animations.css"   src/styles/animations.css
 cp "$TEMPLATES/src/styles/fonts.css"        src/styles/fonts.css
 
-cp "$TEMPLATES/src/hooks/useStageScale.ts" src/hooks/useStageScale.ts
-cp "$TEMPLATES/src/hooks/useStepper.ts"    src/hooks/useStepper.ts
+cp "$TEMPLATES/src/hooks/useStageScale.ts"   src/hooks/useStageScale.ts
+cp "$TEMPLATES/src/hooks/useStepper.ts"      src/hooks/useStepper.ts
+cp "$TEMPLATES/src/hooks/useAudioPlayer.ts"  src/hooks/useAudioPlayer.ts
+cp "$TEMPLATES/src/hooks/useAutoMode.ts"     src/hooks/useAutoMode.ts
 
-cp "$TEMPLATES/src/components/Stage.tsx"        src/components/Stage.tsx
-cp "$TEMPLATES/src/components/MaskReveal.tsx"   src/components/MaskReveal.tsx
-cp "$TEMPLATES/src/components/ProgressBar.tsx"  src/components/ProgressBar.tsx
-cp "$TEMPLATES/src/components/ProgressBar.css"  src/components/ProgressBar.css
+cp "$TEMPLATES/src/components/Stage.tsx"          src/components/Stage.tsx
+cp "$TEMPLATES/src/components/MaskReveal.tsx"     src/components/MaskReveal.tsx
+cp "$TEMPLATES/src/components/ProgressBar.tsx"    src/components/ProgressBar.tsx
+cp "$TEMPLATES/src/components/ProgressBar.css"    src/components/ProgressBar.css
+cp "$TEMPLATES/src/components/AutoStartGate.tsx"  src/components/AutoStartGate.tsx
+cp "$TEMPLATES/src/components/AutoStartGate.css"  src/components/AutoStartGate.css
+cp "$TEMPLATES/src/components/AutoToggle.tsx"     src/components/AutoToggle.tsx
+cp "$TEMPLATES/src/components/AutoToggle.css"     src/components/AutoToggle.css
 
 cp "$TEMPLATES/src/registry/types.ts"    src/registry/types.ts
 cp "$TEMPLATES/src/registry/chapters.ts" src/registry/chapters.ts
 
-cp "$TEMPLATES/src/chapters/01-example/Example.tsx" src/chapters/01-example/Example.tsx
-cp "$TEMPLATES/src/chapters/01-example/Example.css" src/chapters/01-example/Example.css
+cp "$TEMPLATES/src/chapters/01-example/Example.tsx"     src/chapters/01-example/Example.tsx
+cp "$TEMPLATES/src/chapters/01-example/Example.css"     src/chapters/01-example/Example.css
+cp "$TEMPLATES/src/chapters/01-example/narrations.ts"   src/chapters/01-example/narrations.ts
+
+# Audio pipeline scripts (extract-narrations + synthesize-audio).
+cp "$TEMPLATES/scripts/extract-narrations.ts"  scripts/extract-narrations.ts
+cp "$TEMPLATES/scripts/synthesize-audio.sh"    scripts/synthesize-audio.sh
+chmod +x scripts/synthesize-audio.sh
+
+# Wire the audio scripts into npm so contributors don't have to remember
+# the exact command. Uses node to merge into the existing package.json.
+node -e '
+const fs = require("fs");
+const p = JSON.parse(fs.readFileSync("package.json", "utf8"));
+p.scripts = Object.assign({}, p.scripts, {
+  "extract-narrations": "tsx scripts/extract-narrations.ts",
+  "synthesize-audio":   "bash scripts/synthesize-audio.sh",
+});
+fs.writeFileSync("package.json", JSON.stringify(p, null, 2) + "\n");
+'
 
 # 留个标记，以后能查这个项目从哪个主题起步的
 {
@@ -160,18 +187,33 @@ cat <<EOF
   1. cd $TARGET
   2. npm run dev      # 默认 http://localhost:5174（被占会自动换端口）
 
-当前主题：$THEME（见 .theme）
+当前主题：${THEME}（见 .theme）
 
 然后：
 
   • 点舞台任意位置推进全局 step 计数器。
-  • 鼠标移到底部边缘可显出进度条。
+  • 鼠标移到底部边缘可显出进度条；鼠标移到右上角可显出播放模式切换。
   • 把 src/chapters/01-example/ 替换成你自己的章节
     （流程见 SKILL.md "Phase 2.4 实现单章" —— 每章一次到位完整版本，
      不分骨架 / 精修两步；动画选型由 chapter agent 按 CHAPTER-CRAFT.md
      Part 0 原则 7 + Part 1 五问决定）。
   • 在 src/registry/chapters.ts 注册每个新章节。
+  • **每章必须有 narrations.ts**（与 Example.tsx 同目录），
+    数组长度 = step 数，是音频合成 + Auto 模式的唯一真相源。
   • 章节改了就 bump src/hooks/useStepper.ts 的 STORAGE_KEY 末尾版本号。
+
+录制：
+
+  • 手动模式：直接打开 http://localhost:5174（点击 / 方向键推进）
+  • 半自动：URL 加 ?audio=1 — 音频跟 step 切，但你手动推进
+  • 全自动录屏：URL 加 ?auto=1 — 按一次 SPACE 启动，整片自动播 + 推进
+                按 M 键随时切换三种模式。
+
+音频合成（可选，录制前做）：
+
+  npm run extract-narrations    # 扫所有章节 narrations.ts → audio-segments.json
+  npm run synthesize-audio      # 调 mmx-cli 合成 → public/audio/<id>/<step>.mp3
+                                # （没装 mmx 见 references/AUDIO.md）
 
 写章节时必读（单一入口，路径在 SKILL 仓库内）：
 
